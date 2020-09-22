@@ -1,0 +1,135 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Sample Golang CRUD API
+  description: A sample API that uses a petstore as an example to demonstrate features in the OpenAPI 3.0 specification
+servers:
+  - url: http://petstore.swagger.io/api
+paths:
+  /tasks:
+    get:
+      description: Returns all tasks
+      operationId: findTasks
+      responses:
+        '200':
+          description: task response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates new task
+      operationId: addTask
+      requestBody:
+        description: Task to add
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTask'
+      responses:
+        '200':
+          description: task response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /tasks/{id}:
+    get:
+      description: Returns one task
+      operationId: find task by id
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: task response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: deletes a single task based on the ID supplied
+      operationId: deleteTask
+      parameters:
+        - name: id
+          in: path
+          description: ID of task to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: task deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Task:
+      allOf:
+        - $ref: '#/components/schemas/NewTask'
+        - type: object
+          required:
+          - id
+          - created_at
+          - updated_at
+          properties:
+            id:
+              type: string
+            created_at:
+              type: string
+              format: date-time
+            updated_at:
+              type: string
+              format: date-time
+
+
+    NewTask:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
